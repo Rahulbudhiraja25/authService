@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -33,17 +34,20 @@ public class RouterAuthenticationController {
     private UserRepository userRepository;
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody LoginRequest loginRequest) {
+    public Map<String,String> login(@Valid @RequestBody LoginRequest loginRequest) {
         Optional<User> optionalUser = userRepository.findByEmail(loginRequest.email);
 
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (passwordEncoder.matches(loginRequest.password, user.getPassword())) {
-                return jwtUtil.generateToken(loginRequest.email);
+//                return jwtUtil.generateToken(loginRequest.email);
+                return Map.of(
+                        "Authorization", "Bearer " + jwtUtil.generateToken(loginRequest.getEmail())
+                );
             }
         }
 
-        return "Invalid credentials";
+        return Map.of("Bad Request", "Invalid credentials");
     }
 
 

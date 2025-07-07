@@ -8,6 +8,7 @@
 package com.liquidtech.authservice.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,4 +19,11 @@ public class TestController {
     public ResponseEntity<String> profile() {
         return ResponseEntity.ok("You are authenticated!");
     }
+
+    @GetMapping("/api/admin")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
+    public ResponseEntity<String> admin() {
+        return ResponseEntity.ok("You are adminly authenticated!");
+    }
+
 }
